@@ -26,4 +26,9 @@ jobs:
           --instanceurl ${{ secrets.SF_INSTANCE_URL }} \
           --setdefaultdevhubusername
 
-   
+    - name: Deploy to Salesforce (Validation Only)
+      run: |
+        sfdx force:source:deploy -p force-app -u ${{ secrets.SF_USERNAME }} --checkonly --json
+
+
+
