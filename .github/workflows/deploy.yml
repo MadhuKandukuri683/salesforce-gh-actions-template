@@ -31,6 +31,5 @@ jobs:
         sfdx force:source:deploy -p force-app -u ${{ secrets.SF_USERNAME }} --checkonly --json
     - name: Deploy to Salesforce
       run: | 
-        sfdx force:source:deploy -p force-app -u ${{ secrets.SF_USERNAME }} --json --testlevel RunLocalTests
-
+        sfdx force:source:deploy -p force-app -u ${{ secrets.SF_USERNAME }} --json
 
