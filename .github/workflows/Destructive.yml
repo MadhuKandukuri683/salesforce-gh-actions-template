@@ -1,0 +1,62 @@
+name: Salesforce Deployment with Destructive Changes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'manifest/destructiveChanges.xml'
+      - 'src/**'
+      - 'manifest/package.xml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install sfdx-cli --global
+          sfdx --version
+
+      - name: Authenticate with Salesforce
+        env:
+          SF_AUTH_URL: ${{ secrets.SF_AUTH_URL }}
+        run: |
+          echo "${SF_AUTH_URL}" > authfile.json
+          sfdx auth:sfdxurl:store -f authfile.json -a myOrg
+
+      - name: Deploy Metadata
+        run: |
+          if [ -f manifest/destructiveChanges.xml ]; then
+            echo "Performing destructive deployment..."
+            sfdx force:mdapi:deploy \
+              --deploydir src \
+              --manifest manifest/package.xml \
+              --wait 10 \
+              --testlevel NoTestRun \
+              --targetusername myOrg \
+              --ignoreerrors \
+              --verbose
+              
+            sfdx force:mdapi:deploy \
+              --deploydir src \
+              --manifest manifest/destructiveChanges.xml \
+              --wait 10 \
+              --testlevel NoTestRun \
+              --targetusername myOrg \
+              --ignoreerrors \
+              --verbose
+          else
+            echo "No destructiveChanges.xml found. Performing normal deployment..."
+            sfdx force:mdapi:deploy \
+              --deploydir src \
+              --manifest manifest/package.xml \
+              --wait 10 \
+              --testlevel NoTestRun \
+              --targetusername myOrg \
+              --verbose
+          fi
