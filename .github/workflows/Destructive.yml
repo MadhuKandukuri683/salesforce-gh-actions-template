@@ -25,15 +25,7 @@ jobs:
           --username ${{ secrets.SF_USERNAME }} \
           --instanceurl ${{ secrets.SF_INSTANCE_URL }} \
           --setdefaultdevhubusername
-
-    - name: Deploy to Salesforce (Validation Only)
-      run: |
-        sfdx force:source:deploy -p force-app -u ${{ secrets.SF_USERNAME }} --checkonly --json
-
-    - name: Deploy to Salesforce
-      run: | 
-        sfdx force:source:deploy -p force-app -u ${{ secrets.SF_USERNAME }} --json --testlevel RunLocalTests
-
+          
     - name: Run Destructive Changes (if file exists)
       run: |
         if [ -f manifest/destructiveChanges.xml ]; then
